@@ -213,6 +213,15 @@ pub fn restore_stack_depth(ctx: &mut Context, stack_depth: StackDepth) {
     ctx.sp_depth = stack_depth;
 }
 
+pub fn carry_block_result(ctx: &mut Context, stack_depth: StackDepth) {
+    let gpr = pop_i32(ctx);
+    let offset = ((ctx.sp_depth.0 - stack_depth.0) * WORD_SIZE) as i32;
+    dynasm!(ctx.asm
+        ; mov [rsp + offset], Rq(gpr)
+    );
+    ctx.regs.release_scratch_gpr(gpr);
+}
+
 fn push_i32(ctx: &mut Context, gpr: GPR) {
     // For now, do an actual push (and pop below). In the future, we could
     // do on-the-fly register allocation here.

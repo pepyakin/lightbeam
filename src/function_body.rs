@@ -202,6 +202,15 @@ pub fn translate(session: &mut CodeGenSession, body: &FunctionBody) -> Result<()
 
                 restore_stack_depth(&mut ctx, control_frame.outgoing_stack_depth());
             }
+            Operator::Br { relative_depth } => {
+                let idx = control_frames.len() - 1 - relative_depth as usize;
+                let control_frame = control_frames.get(idx).expect("wrong depth");
+
+                if control_frame.ty != Type::EmptyBlockType {
+                    carry_block_result(&mut ctx, control_frame.outgoing_stack_depth());
+                }
+                br(&mut ctx, control_frame.kind.br_destination());
+            }
             Operator::I32Eq => {
                 relop_eq_i32(&mut ctx);
             }

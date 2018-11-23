@@ -120,4 +120,24 @@ fn if_without_result() {
     assert_eq!(execute_wat(code, 2, 3), 2);
 }
 
+#[test]
+fn br_block() {
+    let code = r#"
+(module
+  (func (param i32) (param i32) (result i32)
+    get_local 1
+    (block (result i32)
+        get_local 0
+        get_local 0
+        br 0
+        unreachable
+    )
+    i32.add
+  )
+)
+    "#;
+
+    assert_eq!(execute_wat(code, 5, 7), 12);
+}
+
 // TODO: Add a test that checks argument passing via the stack.
