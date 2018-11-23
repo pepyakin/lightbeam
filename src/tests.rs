@@ -54,6 +54,21 @@ fn relop_eq() {
 }
 
 #[test]
+fn block() {
+    let code = r#"
+(module
+  (func (param i32) (param i32) (result i32)
+    (block (result i32)
+        get_local 0
+    )
+  )
+)
+    "#;
+
+    assert_eq!(execute_wat(code, 10, 20), 10);
+}
+
+#[test]
 fn if_then_else() {
     const CASES: &[(usize, usize, usize)] = &[
         (0, 1, 1),

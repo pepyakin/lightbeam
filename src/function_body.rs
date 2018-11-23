@@ -131,6 +131,16 @@ pub fn translate(session: &mut CodeGenSession, body: &FunctionBody) -> Result<()
                     .mark_stack_polymorphic();
                 trap(&mut ctx);
             }
+            Operator::Block { ty } => {
+                let end_label = create_label(&mut ctx);
+                control_frames.push(ControlFrame::new(
+                    ControlFrameKind::Block {
+                        end_label,
+                    },
+                    current_stack_depth(&ctx),
+                    ty,
+                ));
+            }
             Operator::If { ty } => {
                 let end_label = create_label(&mut ctx);
                 let if_not = create_label(&mut ctx);
