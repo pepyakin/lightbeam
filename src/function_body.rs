@@ -211,6 +211,20 @@ pub fn translate(session: &mut CodeGenSession, body: &FunctionBody) -> Result<()
                 }
                 br(&mut ctx, control_frame.kind.br_destination());
             }
+            Operator::BrIf { relative_depth } => {
+                let idx = control_frames.len() - 1 - relative_depth as usize;
+                let control_frame = control_frames.get(idx).expect("wrong depth");
+
+                let if_not = create_label(&mut ctx);
+                pop_and_breq(&mut ctx, if_not);
+
+                if control_frame.ty != Type::EmptyBlockType {
+                    carry_block_result(&mut ctx, control_frame.outgoing_stack_depth());
+                }
+                br(&mut ctx, control_frame.kind.br_destination());
+
+                define_label(&mut ctx, if_not);
+            }
             Operator::I32Eq => {
                 relop_eq_i32(&mut ctx);
             }

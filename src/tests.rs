@@ -140,4 +140,47 @@ fn br_block() {
     assert_eq!(execute_wat(code, 5, 7), 12);
 }
 
+// Tests discarding values on the value stack, while
+// carrying over the result using a conditional branch.
+#[test]
+fn brif_block() {
+    let code = r#"
+(module
+  (func (param i32) (param i32) (result i32)
+    get_local 1
+    (block (result i32)
+        get_local 0
+        get_local 0
+        br_if 0
+        unreachable
+    )
+    i32.add
+  )
+)
+    "#;
+
+    assert_eq!(execute_wat(code, 5, 7), 12);
+}
+
+// Tests that br_if keeps values in the case if the branch
+// hasn't been taken.
+#[test]
+fn brif_block_passthru() {
+    let code = r#"
+(module
+  (func (param i32) (param i32) (result i32)
+    (block (result i32)
+        get_local 1
+        get_local 0
+        br_if 0
+        get_local 1
+        i32.add
+    )
+  )
+)
+    "#;
+
+    assert_eq!(execute_wat(code, 0, 3), 6);
+}
+
 // TODO: Add a test that checks argument passing via the stack.

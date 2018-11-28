@@ -154,6 +154,8 @@ pub struct TranslatedCodeSection {
 
 impl TranslatedCodeSection {
     pub fn func_start(&self, idx: usize) -> *const u8 {
+        ::disassemble::disassemble(&self.exec_buf);
+
         let offset = self.func_starts[idx];
         self.exec_buf.ptr(offset)
     }
@@ -239,6 +241,10 @@ fn pop_i32(ctx: &mut Context) -> GPR {
         ; pop Rq(gpr)
     );
     gpr
+}
+
+pub fn push_imm_i32(ctx: &mut Context, literal: u32) {
+    unimplemented!()
 }
 
 pub fn add_i32(ctx: &mut Context) {
